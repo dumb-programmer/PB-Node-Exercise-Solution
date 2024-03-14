@@ -4,6 +4,8 @@ const express = require("express");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
+const db = require("./models");
+
 const app = express();
 
 app.use(express.json());
@@ -32,8 +34,11 @@ app.use((req, res, next) => {
 // Error Handler
 app.use((err, req, res, next) => {
   res.status(500).json({ message: "Something went wrong" });
+  console.log(err);
 });
 
-app.listen(3000, () => {
-  console.log("server running on port 3000");
+db.sequelize.sync().then(() => {
+  app.listen(3000, () => {
+    console.log("server running on port 3000");
+  });
 });
