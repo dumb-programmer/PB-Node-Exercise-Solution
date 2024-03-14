@@ -89,7 +89,7 @@ const verifyOTP = [
       }),
     })
   ),
-  async function verifyOTP(req, res, next) {
+  async (req, res, next) => {
     const { userId } = req.params;
     const { otp } = req.query;
 

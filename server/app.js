@@ -3,11 +3,13 @@ require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const cors = require("cors");
 
 const db = require("./models");
 
 const app = express();
 
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(helmet()); // Add security headers
 
