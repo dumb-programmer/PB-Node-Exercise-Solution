@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
 
 const userRouter = require("./routes/user");
 
-app.use("/users", userRouter);
+app.use("/api/users", userRouter);
 
 // Not Found
 app.use((req, res, next) => {
