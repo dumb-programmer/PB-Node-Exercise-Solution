@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const moment = require("moment");
 
-const User = require("../models/user");
+const { User } = require("../models");
 const validateBody = require("../middleware/validateBody");
 const { z } = require("zod");
 const validateParams = require("../middleware/validateParams");
@@ -64,9 +64,12 @@ const generateOTP = [
 
       const otp = ("0000" + crypto.randomBytes(2).readUInt16BE(0)).slice(-4);
 
-      const otp_expiration = moment().add(5, "minutes");
+      const otp_expiration_date = moment().add(5, "minutes");
 
-      await User.update({ otp, otp_expiration }, { where: { phone_number } });
+      await User.update(
+        { otp, otp_expiration_date },
+        { where: { phone_number } }
+      );
 
       res.json({ user_id: user.id });
     } catch (error) {
@@ -96,18 +99,20 @@ const verifyOTP = [
       });
 
       if (!user) {
-        return res.status(404).json({ message: "No such user exists" });
+        return res.status(404).json({ message: "User not found" });
+      } else if (!user.otp) {
+        return res.status(404).json({ message: "OTP not found" });
       }
 
       const current_date = moment();
 
-      if (user.otp_expiration > current_date && user.otp == otp) {
+      if (user.otp_expiration_date > current_date && user.otp == otp) {
         return res.json({
           id: user.id,
           name: user.name,
           phone_number: user.phone_number,
         });
-      } else if (user.otp_expiration < current_date) {
+      } else if (user.otp_expiration_date < current_date) {
         return res.status(400).json({ message: "OTP expired" });
       }
 
